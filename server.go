@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/gautamrege/gochat/api"
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 	"log"
 	"net"
 	"sync"
+
+	"github.com/gautamrege/gochat/api"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 type chatServer struct {
@@ -17,6 +18,9 @@ func (s *chatServer) Chat(ctx context.Context, req *api.ChatRequest) (res *api.C
 	fmt.Printf("\n%s\n> ", fmt.Sprintf("@%s says: \"%s\"", req.From.Name, req.Message))
 
 	// TODO-WORKSHOP-STEP-7: If this is a chat from an unknown user, insert into PeerHandleMap
+	if req.From != nil {
+		USERS.Insert(*req.From)
+	}
 	return &api.ChatResponse{}, nil
 }
 

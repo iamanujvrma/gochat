@@ -34,8 +34,17 @@ func main() {
 	flag.Parse()
 
 	// TODO-WORKSHOP-STEP-1: If the name and host are empty, return an error with help message
+	if *name == "" || *host == "" {
+		fmt.Println("Usage: gochat --name <name> --host <IP Address> --port <port>")
+		return
+	}
 
 	// TODO-WORKSHOP-STEP-2: Initialize global MyHandle of type api.Handle
+	MyHandle = api.Handle{
+		Name: *name,
+		Host: *host,
+		Port: int32(*port),
+	}
 
 	var wg sync.WaitGroup
 	wg.Add(3)
@@ -65,6 +74,15 @@ func parseAndExecInput(input string) {
 	// Split the line into 2 tokens (cmd and message)
 	tokens := strings.SplitN(input, " ", 2)
 	cmd := tokens[0]
+	/*
+			   @gautam hello golang
+
+			   tokens = ["@gautam", "hello golang"]
+
+		       cmd = "@gautam"
+
+		       cmd[0] = "@"
+	*/
 
 	switch {
 	case cmd == "":
@@ -82,6 +100,18 @@ func parseAndExecInput(input string) {
 		// TODO-WORKSHOP-STEP-9: Write code to sendChat. Example
 		// "@gautam hello golang" should send a message to handle with name "gautam" and message "hello golang"
 		// Invoke sendChat to send the  message
+		message := "hello"
+		if len(tokens) > 1 {
+			message = tokens[1]
+		}
+		receiverName := cmd[1:]
+		receiverHandle, ok := USERS.Get(receiverName)
+		if !ok {
+			fmt.Printf("No such user exists: %s \n", receiverName)
+			break
+		}
+
+		sendChat(receiverHandle, message)
 		break
 	case strings.ToLower(cmd) == "/help":
 		fmt.Println(helpStr)
